@@ -1,0 +1,15 @@
+﻿@{
+    ViewData["Title"] = "Home Page";
+    var connectedMachines = Model as List<ConnectedMachine>;
+}
+
+<div class="text-center">
+    <h1 class="display-4">Welcome</h1>
+    <p>Learn about <a href="https://docs.microsoft.com/aspnet/core">building Web apps with ASP.NET Core</a>.</p>
+</div>
+<ul>
+    @foreach (var cm in connectedMachines)
+    {
+        <li>@cm.IsConnected - <a href="/remote/@cm.MachineName">@cm.MachineName</a> - @cm.ConnectionId</li>
+    }
+</ul>
