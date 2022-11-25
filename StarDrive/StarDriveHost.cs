@@ -50,7 +50,7 @@ internal class StarDriveHost : IHostedService
             catch (Exception ex)
             {
                 await Task.Delay(1000, cancellationToken);
-                _logger.LogError(ex, $"Unable to find StarDrive at {_serverUrl} - {DateTime.Now.ToString()}");
+                _logger.LogError( $"Unable to find StarDrive at {_serverUrl} - {DateTime.Now.ToString()}");
             }
         }
     }
