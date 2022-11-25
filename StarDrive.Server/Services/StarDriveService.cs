@@ -1,13 +1,15 @@
-﻿using StarDrive.Server.Models;
+﻿using Microsoft.AspNetCore.SignalR;
+using StarDrive.Server.Models;
 
 namespace StarDrive.Server.Services
 {
     public class StarDriveService
     {
+        private readonly IHubContext<DriveHub> _driveHub;
         public List<ConnectedMachine> ConnectedMachines { get; set; }= new List<ConnectedMachine>();
-        public StarDriveService()
+        public StarDriveService(IHubContext<DriveHub> driveHub)
         {
-
+            _driveHub = driveHub;
         }
 
         public void ConnectMachine(string connectionId, string machineName)
@@ -28,6 +30,11 @@ namespace StarDrive.Server.Services
             var cm = ConnectedMachines.FirstOrDefault(m=>m.ConnectionId==connectionId);
             cm.IsConnected = false;
             cm.ConnectionId = string.Empty;
+        }
+
+        public async Task ReadDirAsync(string connectionId, string path)
+        {
+            await _driveHub.Clients.Client(connectionId).SendAsync("ReadDir", path);
         }
     }
 }

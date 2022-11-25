@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.SignalR.Client;
+using StarDrive.Shared;
 using System;
 using System.Collections.Generic;
 using System.Data;
@@ -32,6 +33,39 @@ internal class StarDriveHost : IHostedService
         _connection.Closed += _connection_Closed;
         _connection.Reconnected += _connection_Reconnected;
         _connection.Reconnecting += _connection_Reconnecting;
+        _connection.On<string>("ReadDir", ReadDirectory);
+    }
+    public async Task ReadDirectory(string path)
+    {
+        List<DirectoryItem> directoryItems = new List<DirectoryItem>();
+        //string rootPath = @"C:\StarDrive";
+        var files = Directory.EnumerateFiles(path, "*.*");
+        foreach (var file in files)
+        {
+            directoryItems.Add(new DirectoryItem() { Path = file, IsDirectory=false });
+        }
+
+        var directories = Directory.EnumerateDirectories(path,"*",SearchOption.TopDirectoryOnly);
+        foreach (var d in directories)
+        {
+            Console.WriteLine("");
+            Console.WriteLine(d);
+            try
+            {
+                directoryItems.Add(new DirectoryItem() { Path = d, IsDirectory = true });
+                var f = Directory.EnumerateFiles(d, "*.*");
+                foreach (var file in f)
+                {
+                    Console.WriteLine("  " + file);
+                    directoryItems.Add(new DirectoryItem() { Path = file, IsDirectory = false });
+                }
+            }
+            catch 
+            {
+                // swallow the errors
+            }
+        }
+        await _connection.InvokeAsync("DirectoryResult", directoryItems);
     }
     public async Task StartAsync(CancellationToken cancellationToken)
     {

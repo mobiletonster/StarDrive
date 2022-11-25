@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.SignalR;
 using StarDrive.Server.Models;
 using StarDrive.Server.Services;
+using StarDrive.Shared;
 
 namespace StarDrive.Server
 {
@@ -29,6 +30,11 @@ namespace StarDrive.Server
         {
             _starDriveService.DisconnectMachine(Context.ConnectionId);
             await base.OnDisconnectedAsync(exception);
+        }
+
+        public async Task DirectoryResult(List<DirectoryItem> directoryItems)
+        {
+            var dirItems = directoryItems;
         }
     }
 }

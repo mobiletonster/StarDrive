@@ -13,4 +13,8 @@
     <PackageReference Include="Microsoft.Extensions.Hosting.WindowsServices" Version="7.0.0" />
   </ItemGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\StarDrive.Shared\StarDrive.Shared.csproj" />
+  </ItemGroup>
+
 </Project>
