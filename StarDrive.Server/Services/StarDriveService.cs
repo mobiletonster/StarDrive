@@ -1,5 +1,7 @@
 ﻿using Microsoft.AspNetCore.SignalR;
 using StarDrive.Server.Models;
+using StarDrive.Shared;
+using System.Reflection.Metadata.Ecma335;
 
 namespace StarDrive.Server.Services
 {
@@ -32,9 +34,11 @@ namespace StarDrive.Server.Services
             cm.ConnectionId = string.Empty;
         }
 
-        public async Task ReadDirAsync(string connectionId, string path)
+        public async Task<List<DirectoryItem>> ReadDirAsync(string connectionId, string path)
         {
-            await _driveHub.Clients.Client(connectionId).SendAsync("ReadDir", path);
+            var cancelToken = new CancellationToken();
+            var directoryItems = await _driveHub.Clients.Client(connectionId).InvokeAsync<List<DirectoryItem>>("ReadDir",path,cancelToken);
+            return directoryItems;
         }
     }
 }

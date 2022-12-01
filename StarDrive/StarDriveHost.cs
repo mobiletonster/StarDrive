@@ -35,37 +35,34 @@ internal class StarDriveHost : IHostedService
         _connection.Reconnecting += _connection_Reconnecting;
         _connection.On<string>("ReadDir", ReadDirectory);
     }
-    public async Task ReadDirectory(string path)
+    public async Task<List<DirectoryItem>> ReadDirectory(string path)
     {
         List<DirectoryItem> directoryItems = new List<DirectoryItem>();
         //string rootPath = @"C:\StarDrive";
-        var files = Directory.EnumerateFiles(path, "*.*");
+        DirectoryInfo di = new DirectoryInfo(path);
+        
+        var files = di.GetFiles().Where(m=>!m.Attributes.HasFlag(FileAttributes.Hidden));
         foreach (var file in files)
         {
-            directoryItems.Add(new DirectoryItem() { Path = file, IsDirectory=false });
+            directoryItems.Add(new DirectoryItem() { Name= file.Name, Path = file.FullName, IsDirectory=false });
         }
 
-        var directories = Directory.EnumerateDirectories(path,"*",SearchOption.TopDirectoryOnly);
+        var directories = di.GetDirectories().Where(m=>!m.Attributes.HasFlag(FileAttributes.Hidden));
         foreach (var d in directories)
         {
             Console.WriteLine("");
             Console.WriteLine(d);
             try
             {
-                directoryItems.Add(new DirectoryItem() { Path = d, IsDirectory = true });
-                var f = Directory.EnumerateFiles(d, "*.*");
-                foreach (var file in f)
-                {
-                    Console.WriteLine("  " + file);
-                    directoryItems.Add(new DirectoryItem() { Path = file, IsDirectory = false });
-                }
+                directoryItems.Add(new DirectoryItem() { Name=d.Name, Path = d.FullName, IsDirectory = true });
             }
             catch 
             {
                 // swallow the errors
             }
         }
-        await _connection.InvokeAsync("DirectoryResult", directoryItems);
+        return directoryItems;
+        // await _connection.InvokeAsync("DirectoryResult", directoryItems);
     }
     public async Task StartAsync(CancellationToken cancellationToken)
     {
@@ -107,6 +104,7 @@ internal class StarDriveHost : IHostedService
     private async Task _connection_Closed(Exception? arg)
     {
         _logger.LogWarning($"Separated from StarDrive. - {DateTime.Now.ToString()}");
+        _logger.LogError("Booooom", arg);
         await this.StartAsync(_cancellationToken);
     }
 }

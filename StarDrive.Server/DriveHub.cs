@@ -34,7 +34,11 @@ namespace StarDrive.Server
 
         public async Task DirectoryResult(List<DirectoryItem> directoryItems)
         {
+            var connectionId = Context.ConnectionId;
+
             var dirItems = directoryItems;
+            var cm = _starDriveService.ConnectedMachines.FirstOrDefault(m => m.ConnectionId == connectionId);
+            cm.DirectoryItems = directoryItems;
         }
     }
 }

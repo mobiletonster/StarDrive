@@ -1,5 +1,27 @@
-﻿@*
+﻿@using StarDrive.Shared;
+@*
     For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 *@
 @{
+    var dirItems = Model as List<DirectoryItem>;
 }
+
+
+<ul>
+    @if (dirItems is not null)
+    {
+        @foreach (var d in dirItems)
+        {
+            <li>
+                @if(d.IsDirectory)
+                {
+                    <i class='bi bi-folder-fill' style="color:#c99027"></i>
+                    <a href="?path=@d.Path">@d.Name</a>
+                } else{
+                    <i class='bi bi-file-earmark'></i>
+                    @d.Name
+                }
+            </li>
+        }
+    }
+</ul>

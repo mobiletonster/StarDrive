@@ -5,7 +5,10 @@ var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 builder.Services.AddControllersWithViews();
-builder.Services.AddSignalR();
+builder.Services.AddSignalR().AddHubOptions<DriveHub>(options =>
+{
+    options.MaximumParallelInvocationsPerClient = 10;
+});
 builder.Services.AddSingleton<StarDriveService>();
 
 var app = builder.Build();

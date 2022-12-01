@@ -12,11 +12,12 @@ namespace StarDrive.Server.Controllers
         }
 
         [HttpGet("remote/{machineName}")]
-        public async Task<IActionResult> Index(string machineName)
+        public async Task<IActionResult> Index(string machineName, string path=@"C:\")
         {
             var cm = _service.ConnectedMachines.FirstOrDefault(m => m.MachineName.Equals(machineName));
-            await _service.ReadDirAsync(cm.ConnectionId,@"C:\");
-            return View();
+            var directoryItems = await _service.ReadDirAsync(cm.ConnectionId,path);
+            cm.DirectoryItems = directoryItems;
+            return View(directoryItems);
         }
     }
 }
