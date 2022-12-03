@@ -33,7 +33,7 @@ internal class StarDriveHost : IHostedService
         _connection.Closed += _connection_Closed;
         _connection.Reconnected += _connection_Reconnected;
         _connection.Reconnecting += _connection_Reconnecting;
-        _connection.On<string>("ReadDir", ReadDirectory);
+        _connection.On<string, List<DirectoryItem>>("ReadDir", ReadDirectory);
     }
     public async Task<List<DirectoryItem>> ReadDirectory(string path)
     {
