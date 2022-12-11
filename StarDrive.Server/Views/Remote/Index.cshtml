@@ -4,6 +4,7 @@
 *@
 @{
     var dirItems = Model as List<DirectoryItem>;
+    var machineName = ViewData["MachineName"] as string;
 }
 
 
@@ -19,9 +20,16 @@
                     <a href="?path=@d.Path">@d.Name</a>
                 } else{
                     <i class='bi bi-file-earmark'></i>
-                    @d.Name
+                    <a href="/remote/@machineName/file?path=@d.Path&filename=@d.Name">@d.Name</a>
                 }
             </li>
         }
     }
 </ul>
+<script type="text/javascript">
+    function getFile(path){
+        console.log("Need to get this file");
+        console.log(path);
+        // alert(path);
+    }    
+</script>

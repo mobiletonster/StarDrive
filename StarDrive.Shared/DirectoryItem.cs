@@ -13,5 +13,4 @@ public class DirectoryItem
     public string Path { get; set; }
     public DateTime Modified { get; set; }
     public long Size { get; set; }
-    public List<DirectoryItem> Items { get; set; }
 }

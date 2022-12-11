@@ -5,9 +5,13 @@ var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 builder.Services.AddControllersWithViews();
-builder.Services.AddSignalR().AddHubOptions<DriveHub>(options =>
+
+builder.Services.AddSignalR()
+    .AddHubOptions<DriveHub>(options =>
 {
     options.MaximumParallelInvocationsPerClient = 10;
+    options.MaximumReceiveMessageSize = null; // 2147483647;  // set to null for unlimited? 
+    options.EnableDetailedErrors = true;
 });
 builder.Services.AddSingleton<StarDriveService>();
 

@@ -34,6 +34,7 @@ internal class StarDriveHost : IHostedService
         _connection.Reconnected += _connection_Reconnected;
         _connection.Reconnecting += _connection_Reconnecting;
         _connection.On<string, List<DirectoryItem>>("ReadDir", ReadDirectory);
+        _connection.On<string, byte[]>("ReadFile", ReadFile);
     }
     public async Task<List<DirectoryItem>> ReadDirectory(string path)
     {
@@ -50,19 +51,36 @@ internal class StarDriveHost : IHostedService
         var directories = di.GetDirectories().Where(m=>!m.Attributes.HasFlag(FileAttributes.Hidden));
         foreach (var d in directories)
         {
-            Console.WriteLine("");
-            Console.WriteLine(d);
             try
             {
                 directoryItems.Add(new DirectoryItem() { Name=d.Name, Path = d.FullName, IsDirectory = true });
             }
-            catch 
+            catch (Exception ex)
             {
                 // swallow the errors
+                Console.WriteLine($"Something broke {ex.Message}");
             }
         }
-        return directoryItems;
+        //if (directoryItems.Count > 50)
+        //{
+        //    await _connection.InvokeAsync("DirectoryResult", directoryItems);
+        //}
+        return directoryItems.ToList();
         // await _connection.InvokeAsync("DirectoryResult", directoryItems);
+    }
+    public async Task<byte[]> ReadFile(string path)
+    {
+        //DirectoryInfo di = new DirectoryInfo(path);
+
+        var fileStream = File.OpenRead(path);
+        var fileBytes = await File.ReadAllBytesAsync(path);
+        var bytes =new byte[fileStream.Length];
+        while (fileStream.Position < fileStream.Length)
+        {
+            var fileByte = fileStream.ReadByte();
+            bytes[fileStream.Position-1]= (byte)fileByte;
+        }
+        return fileBytes;
     }
     public async Task StartAsync(CancellationToken cancellationToken)
     {

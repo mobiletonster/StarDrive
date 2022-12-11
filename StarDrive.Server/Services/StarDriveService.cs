@@ -40,5 +40,12 @@ namespace StarDrive.Server.Services
             var directoryItems = await _driveHub.Clients.Client(connectionId).InvokeAsync<List<DirectoryItem>>("ReadDir",path,cancelToken);
             return directoryItems;
         }
+
+        internal async Task<byte[]> ReadFileAsync(string connectionId, string path)
+        {
+            var cancelToken = new CancellationToken();
+            var file = await _driveHub.Clients.Client(connectionId).InvokeAsync<byte[]>("ReadFile", path, cancelToken);
+            return file;
+        }
     }
 }
