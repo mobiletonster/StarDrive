@@ -8,28 +8,83 @@
 }
 
 
-<ul>
+<div class="row">
+    <div class="col-2 col-sm-0"></div>
+    <div class="col-8 col-sm-12">
+        <table class="table table-borderless">
+            <thead class="table-light">
+                <tr><th>File</th><th>Size</th><th>Last Modified</th><th colspan="3">Actions</th></tr>
+            </thead>
+            <tbody class="table-group-divider">
+                @if (dirItems is not null)
+                {
+                    @foreach (var d in dirItems)
+                    {
+                        <tr>
+                            @if (d.IsDirectory)
+                            {
+                                <td>
+                                    <i class='bi bi-folder-fill' style="color:#c99027"></i> 
+                                    <a href="?path=@d.Path">@d.Name</a>
+                                </td>
+                                <td colspan="7"></td>
+                            }
+                            else
+                            {
+                                <td>
+                                    <i class='bi bi-file-earmark'></i> @d.Name
+                                </td>
+                                <td>@d.Size </td>
+                                <td>@d.Modified</td>
+                                <td>
+                                    <a href="/remote/@machineName/filechannel?path=@d.Path&filename=@d.Name&bytesize=1024"> <i class="bi bi-rocket"></i></a>
+                                </td>
+
+                                <td>
+                                    <a href="/remote/@machineName/filestream?path=@d.Path&filename=@d.Name&bytesize=1024"> <i class="bi bi-cloud-rain-heavy-fill"></i></a>
+                                </td>
+                                <td><a href="/remote/@machineName/file?path=@d.Path&filename=@d.Name"><i class="bi bi-download"></i> </a></td>
+                            }
+                        </tr>
+                    }
+                }
+            </tbody>
+        </table>
+    </div>
+    <div class="col-2 col-sm-0"></div>
+</div>
+
+
+<script type="text/javascript">
+    function getFile(path) {
+        console.log("Need to get this file");
+        console.log(path);
+        // alert(path);
+    }
+</script>
+
+
+@*<ul>
     @if (dirItems is not null)
     {
         @foreach (var d in dirItems)
         {
             <li>
-                @if(d.IsDirectory)
+                @if (d.IsDirectory)
                 {
                     <i class='bi bi-folder-fill' style="color:#c99027"></i>
                     <a href="?path=@d.Path">@d.Name</a>
-                } else{
+                }
+                else
+                {
                     <i class='bi bi-file-earmark'></i>
-                    <a href="/remote/@machineName/file?path=@d.Path&filename=@d.Name">@d.Name</a>
+                    <ul>
+                        <li><a href="/remote/@machineName/filechannel?path=@d.Path&filename=@d.Name&bytesize=512"> <i class="bi bi-rocket"></i> CHANNEL - @d.Name</a></li>
+                        <li><a href="/remote/@machineName/filestream?path=@d.Path&filename=@d.Name&bytesize=512"> <i class="bi bi-cloud-rain-heavy-fill"></i> STREAM - @d.Name</a></li>
+                        <li><a href="/remote/@machineName/file?path=@d.Path&filename=@d.Name"><i class="bi bi-download"></i> FILE - @d.Name</a></li>
+                    </ul>
                 }
             </li>
         }
     }
-</ul>
-<script type="text/javascript">
-    function getFile(path){
-        console.log("Need to get this file");
-        console.log(path);
-        // alert(path);
-    }    
-</script>
+</ul>*@

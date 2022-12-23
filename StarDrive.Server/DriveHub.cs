@@ -1,8 +1,12 @@
 ﻿
+using Microsoft.AspNetCore.Mvc.TagHelpers;
+using Microsoft.AspNetCore.Routing.Constraints;
 using Microsoft.AspNetCore.SignalR;
 using StarDrive.Server.Models;
 using StarDrive.Server.Services;
 using StarDrive.Shared;
+using System.Diagnostics;
+using System.Threading.Channels;
 
 namespace StarDrive.Server
 {
@@ -39,6 +43,45 @@ namespace StarDrive.Server
             var dirItems = directoryItems;
             var cm = _starDriveService.ConnectedMachines.FirstOrDefault(m => m.ConnectionId == connectionId);
             cm.DirectoryItems = directoryItems;
+            await Task.CompletedTask;
+        }
+
+        public async Task UploadStream(IAsyncEnumerable<byte[]> stream, string path, int bytesize)
+        {
+            var filename = Path.GetFileName(path);
+            int totalBytes = 0;
+            int count = 0;
+            var stopwatch = new Stopwatch();
+            stopwatch.Start();
+            await foreach (var chunk in stream)
+            {
+                count++;
+                totalBytes += chunk.Length;
+            }
+            stopwatch.Stop();
+            Console.WriteLine($"stream,{count},{stopwatch.ElapsedMilliseconds},{bytesize},{totalBytes},{filename}");
+            _logger.LogInformation($"stream,{count},{stopwatch.ElapsedMilliseconds},{bytesize},{totalBytes},{filename}");
+        }
+
+        public async Task UploadChannel(ChannelReader<byte[]> chunk, string path, int bytesize)
+        {
+            var filename = Path.GetFileName(path);
+            int count = 0;
+            int totalBytes = 0;
+            var stopwatch = new Stopwatch();
+            stopwatch.Start();
+            while (await chunk.WaitToReadAsync())
+            {
+                count++;
+                while (chunk.TryRead(out var item))
+                {
+                    totalBytes+=item.Length;
+                }
+
+            }
+            stopwatch.Stop();
+            Console.WriteLine($"channel,{count},{stopwatch.ElapsedMilliseconds},{bytesize},{totalBytes},{filename}");
+            _logger.LogInformation($"channel,{count},{stopwatch.ElapsedMilliseconds},{bytesize},{totalBytes},{filename}");
         }
     }
 }

@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.SignalR;
 using StarDrive.Server.Models;
 using StarDrive.Shared;
+using System.IO;
 using System.Reflection.Metadata.Ecma335;
 
 namespace StarDrive.Server.Services
@@ -46,6 +47,17 @@ namespace StarDrive.Server.Services
             var cancelToken = new CancellationToken();
             var file = await _driveHub.Clients.Client(connectionId).InvokeAsync<byte[]>("ReadFile", path, cancelToken);
             return file;
+        }
+        internal async Task ReadFileStreamAsync(string connectionId, string path, int bytesize)
+        {
+            var cancelToken = new CancellationToken();
+             await _driveHub.Clients.Client(connectionId).SendAsync("ReadFileStream", path, bytesize, cancelToken);
+        }
+
+        internal async Task ReadFileChannelAsync(string connectionId, string path, int bytesize)
+        {
+            var cancelToken = new CancellationToken();
+            await _driveHub.Clients.Client(connectionId).SendAsync("ReadFileChannel", path, bytesize, cancelToken);
         }
     }
 }
