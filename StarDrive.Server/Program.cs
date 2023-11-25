@@ -1,3 +1,4 @@
+using Microsoft.AspNetCore.Http.Connections;
 using StarDrive.Server;
 using StarDrive.Server.Services;
 
@@ -32,7 +33,11 @@ app.UseStaticFiles();
 app.UseRouting();
 
 app.UseAuthorization();
-app.MapHub<DriveHub>("/drivehub");
+app.MapHub<DriveHub>("/drivehub",options =>
+{
+    options.Transports = HttpTransportType.WebSockets; // don't allow long-polling; 
+});
+
 app.MapControllerRoute(
     name: "default",
     pattern: "{controller=Home}/{action=Index}/{id?}");
