@@ -17,8 +17,8 @@ internal class StarDriveHost : IHostedService
     private HubConnection _connection;
 #if DEBUG
    private readonly string _serverUrl="https://localhost:5001/";
-//#else
-  // private readonly string _serverUrl = "https://stardrive.azurewebsites.net/";
+#else
+   private readonly string _serverUrl = "https://stardrive.azurewebsites.net/";
 #endif
 
     public StarDriveHost(ILogger<StarDriveHost> logger, IConfiguration configuration)
